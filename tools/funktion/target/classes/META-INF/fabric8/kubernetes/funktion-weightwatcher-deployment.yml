@@ -1,0 +1,69 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  annotations:
+    fabric8.io/iconUrl: "img/icons/funktion.png"
+    fabric8.io/metrics-path: "dashboard/file/camel-routes.json/?var-project=funktion-weightwatcher&var-version=1.0-SNAPSHOT"
+  labels:
+    project: "funktion-weightwatcher"
+    provider: "fabric8"
+    version: "1.0-SNAPSHOT"
+    group: "io.fabric8.funktion.quickstart"
+  name: "funktion-weightwatcher"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      project: "funktion-weightwatcher"
+      provider: "fabric8"
+      group: "io.fabric8.funktion.quickstart"
+  template:
+    metadata:
+      annotations:
+        fabric8.io/iconUrl: "img/icons/funktion.png"
+        fabric8.io/metrics-path: "dashboard/file/camel-routes.json/?var-project=funktion-weightwatcher&var-version=1.0-SNAPSHOT"
+      labels:
+        project: "funktion-weightwatcher"
+        provider: "fabric8"
+        version: "1.0-SNAPSHOT"
+        group: "io.fabric8.funktion.quickstart"
+    spec:
+      containers:
+      - env:
+        - name: "KUBERNETES_NAMESPACE"
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.namespace"
+        image: "quickstart/funktion-weightwatcher-funktor:snapshot-160622-204538-0815"
+        imagePullPolicy: "IfNotPresent"
+        name: "funktor"
+        securityContext:
+          privileged: false
+      - env:
+        - name: "KUBERNETES_NAMESPACE"
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.namespace"
+        image: "quickstart/funktion-weightwatcher-trigger:snapshot-160622-204538-0857"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            path: "/health"
+            port: 8081
+          initialDelaySeconds: 180
+        name: "trigger"
+        ports:
+        - containerPort: 8080
+          protocol: "TCP"
+        - containerPort: 9779
+          protocol: "TCP"
+        - containerPort: 8778
+          protocol: "TCP"
+        readinessProbe:
+          httpGet:
+            path: "/health"
+            port: 8081
+          initialDelaySeconds: 10
+        securityContext:
+          privileged: false
