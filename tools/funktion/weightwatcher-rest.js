@@ -2,7 +2,7 @@ var http = require('http');
 var url = require('url');
 
 // var hostname = 'weightwatcher.vagrant.f8';
-var hostname = '172.30.141.217';
+var hostname = '172.17.0.12';
 // var port = 80;
 var port = 8080;
 var path = '/kie-server/services/rest/server/containers/instances/watch';
